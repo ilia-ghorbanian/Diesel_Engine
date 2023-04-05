@@ -1,10 +1,11 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_vulkan.h>
 
 #include <string> 
 
-#define SDL_WINDOW_VULKAN
+//#define SDL_WINDOW_VULKAN
 
 namespace dsl{
 
@@ -13,6 +14,7 @@ class DslWindow {
     
     DslWindow(int w, int h, std::string name);
     ~DslWindow();
+
 
 
     private:
