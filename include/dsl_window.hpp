@@ -1,0 +1,32 @@
+#pragma once
+
+#include <SDL2/SDL.h>
+
+#include <string> 
+
+#define SDL_WINDOW_VULKAN
+
+namespace dsl{
+
+class DslWindow {
+    public:
+    
+    DslWindow(int w, int h, std::string name);
+    ~DslWindow();
+
+
+    private:
+    
+    void initWindow();
+
+    const int width;
+    const int height;
+
+    std::string windowName;
+    SDL_Window *window;
+
+
+    
+};
+
+}

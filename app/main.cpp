@@ -1,6 +1,5 @@
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
-#include <vulkan/vulkan_funcs.hpp>
 
 #include <iostream>
 #include <stdexcept>
