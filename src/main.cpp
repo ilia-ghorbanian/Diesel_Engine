@@ -1,12 +1,42 @@
-#include <iostream>
-using namespace std;
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
-
+#include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_funcs.hpp>
 
-SDL_Window *window;
-char* window_name = "example SDL2 Vulkan application";
+#include <iostream>
+#include <stdexcept>
+#include <cstdlib>
 
+class HelloTriangleApplication {
+public:
+    void run() {
+        initVulkan();
+        mainLoop();
+        cleanup();
+    }
+
+private:
+    void initVulkan() {
+
+    }
+
+    void mainLoop() {
+
+    }
+
+    void cleanup() {
+
+    }
+};
+
+int main() {
+    HelloTriangleApplication app;
+
+    try {
+        app.run();
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}

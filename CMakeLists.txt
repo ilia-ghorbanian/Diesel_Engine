@@ -9,19 +9,20 @@ find_package(SDL2 REQUIRED)
 
 
 
-include_directories(VulkanEngine ${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-include_directories(VulkanEngine ${Vulkan_INCLUDE_DIRS})
-
-
-include_directories(VulkanEngine ${SDL2_INCLUDE_DIRS})
+include_directories( ${Vulkan_INCLUDE_DIRS})
 
 
+include_directories( ${SDL2_INCLUDE_DIRS})
+ 
 
-add_executable(VulkanEngine main.cpp)
+
+
+add_executable(VulkanEngine src/main.cpp)
 
 target_link_libraries(VulkanEngine ${Vulkan_LIBS})
-target_link_libraries(VulkanEngine ${SDL2_LIBS})
+target_link_libraries(VulkanEngine ${SDL2_LIBRARIES})
 
 
 
