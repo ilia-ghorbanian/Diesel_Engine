@@ -9,10 +9,12 @@ namespace dsl {
         static constexpr int WIDTH = 800;
         static constexpr int HEIGHT = 600;
 
-        void run();
+    void run();
 
         private:
         DslWindow dslWindow{WIDTH, HEIGHT, "Vulkan Stuff IG!?!"};
     };
 
 }
+
+

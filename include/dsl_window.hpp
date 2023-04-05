@@ -15,6 +15,9 @@ class DslWindow {
     DslWindow(int w, int h, std::string name);
     ~DslWindow();
 
+    DslWindow(const DslWindow &) = delete;
+    DslWindow &operator=(const DslWindow &) = delete;
+
 
 
     private:

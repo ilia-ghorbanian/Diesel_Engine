@@ -13,8 +13,10 @@ namespace dsl{
 
         SDL_DestroyWindow(window);
         SDL_Quit();
-
     }
+
+
+
 
 
     void DslWindow::initWindow(){
