@@ -1,5 +1,6 @@
 #include "dsl_window.hpp"
 #include <vulkan/vulkan.h>
+#include <stdexcept>
 
 namespace dsl{
 
@@ -32,6 +33,12 @@ namespace dsl{
             height,
             window_flags);
 
+    }
+
+    void DslWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface){
+        if (SDL_Vulkan_CreateSurface(window, instance, surface) != VK_SUCCESS){
+            throw std::runtime_error("Failed to create window surface");
+        }
     }
 
 

@@ -19,6 +19,8 @@ class DslWindow {
     DslWindow &operator=(const DslWindow &) = delete;
 
 
+    void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
+
 
     private:
     
