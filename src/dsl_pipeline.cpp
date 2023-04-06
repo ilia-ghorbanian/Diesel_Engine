@@ -3,8 +3,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <iostream>
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_core.h>
+
 
 
 namespace dsl

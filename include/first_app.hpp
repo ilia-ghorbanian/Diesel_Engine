@@ -1,8 +1,7 @@
 #pragma once
 
-#include "dsl_window.hpp"
 #include "dsl_pipeline.hpp"
-#include "dsl_device.hpp"
+#include "dsl_window.hpp"
 
 
 namespace dsl {

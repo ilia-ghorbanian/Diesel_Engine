@@ -1,4 +1,3 @@
-#include <vulkan/vulkan.h>
 #include "first_app.hpp"
 
 #include <iostream>

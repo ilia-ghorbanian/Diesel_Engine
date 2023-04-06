@@ -1,6 +1,6 @@
 #include "dsl_window.hpp"
-#include <vulkan/vulkan.h>
 #include <stdexcept>
+#include <vulkan/vulkan.h>
 
 namespace dsl{
 
@@ -23,6 +23,7 @@ namespace dsl{
     void DslWindow::initWindow(){
         SDL_Init(SDL_INIT_VIDEO);
 
+
         SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_VULKAN);
 
         window = SDL_CreateWindow(
@@ -38,6 +39,9 @@ namespace dsl{
     void DslWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface){
         if (SDL_Vulkan_CreateSurface(window, instance, surface) != VK_SUCCESS){
             throw std::runtime_error("Failed to create window surface");
+        }
+        else{
+            int i = 0;
         }
     }
 
