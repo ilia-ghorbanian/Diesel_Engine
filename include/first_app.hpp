@@ -1,6 +1,8 @@
 #pragma once
 
 #include "dsl_window.hpp"
+#include "dsl_pipeline.hpp"
+
 
 namespace dsl {
 
@@ -13,6 +15,8 @@ namespace dsl {
 
         private:
         DslWindow dslWindow{WIDTH, HEIGHT, "Vulkan Stuff IG!?!"};
+        DslPipeline dslPipeline{"../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv"};
+        
     };
 
 }
