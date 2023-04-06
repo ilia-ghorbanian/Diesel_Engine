@@ -24,11 +24,9 @@ include_directories( ${SDL2_INCLUDE_DIRS})
 add_executable(main app/main.cpp)
 
 
+
+target_link_libraries(main SDL2 vulkan)
 target_link_libraries(main dieselEngine)
-
-target_link_libraries(main ${Vulkan_LIBS})
-
-target_link_libraries(main ${SDL2_LIBRARIES})
 
 
 
