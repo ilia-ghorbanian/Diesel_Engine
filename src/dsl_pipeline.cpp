@@ -3,12 +3,15 @@
 #include <fstream>
 #include <stdexcept>
 #include <iostream>
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
+
 
 namespace dsl
 {
 
-    DslPipeline::DslPipeline(const std::string &vertFilepath, const std::string &fragFilepath){
-        createGraphicsPipeline(vertFilepath, fragFilepath);
+    DslPipeline::DslPipeline(DslDevice &device ,const std::string &vertFilepath, const std::string &fragFilepath, const PipelineConfigInfo &configInfo) : dslDevice{device}{
+        createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
     }
 
     std::vector<char> DslPipeline::readFile(const std::string &filepath) {
@@ -36,7 +39,7 @@ namespace dsl
     }
 
 
-    void DslPipeline::createGraphicsPipeline(const std::string &vertFilepath, const std::string &fragFilepath){
+    void DslPipeline::createGraphicsPipeline(const std::string &vertFilepath, const std::string &fragFilepath, const PipelineConfigInfo &configInfo){
 
         auto vertCode = readFile(vertFilepath);
         auto fragCode = readFile(fragFilepath);
@@ -46,4 +49,27 @@ namespace dsl
 
 
     }
+
+    void DslPipeline::createShaderModule(const std::vector<char> &code, VkShaderModule*shaderModule){
+        VkShaderModuleCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = code.size();
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+        if(vkCreateShaderModule(dslDevice.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS){
+            throw std::runtime_error("Failed to create shader module");
+        }
+    }
+        
+
+    PipelineConfigInfo DslPipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height){
+
+        PipelineConfigInfo configInfo;
+
+        return configInfo;
+
+    }
+
+
+
 } // namespace dsl

@@ -5,6 +5,7 @@
 // std lib headers
 #include <string>
 #include <vector>
+#include <vulkan/vulkan.h>
 
 namespace dsl {
 

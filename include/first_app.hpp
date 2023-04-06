@@ -2,6 +2,7 @@
 
 #include "dsl_window.hpp"
 #include "dsl_pipeline.hpp"
+#include "dsl_device.hpp"
 
 
 namespace dsl {
@@ -15,7 +16,8 @@ namespace dsl {
 
         private:
         DslWindow dslWindow{WIDTH, HEIGHT, "Vulkan Stuff IG!?!"};
-        DslPipeline dslPipeline{"../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv"};
+        DslDevice dslDevice{dslWindow};
+        DslPipeline dslPipeline{dslDevice, "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv", DslPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
         
     };
 

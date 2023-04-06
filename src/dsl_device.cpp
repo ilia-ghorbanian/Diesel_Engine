@@ -263,11 +263,17 @@ bool DslDevice::checkValidationLayerSupport() {
 
 std::vector<const char *> DslDevice::getRequiredExtensions() {
   
-  uint32_t glfwExtensionCount = 0;
-  const char **glfwExtensions;
-  glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+  // uint32_t glfwExtensionCount = 0;
+  // const char **glfwExtensions;
+  // glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-  std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+  uint32_t sdlExtensionCount = 0;
+  const char **sdlExtensions;
+  
+  SDL_Vulkan_GetInstanceExtensions(window.getWindow(), &sdlExtensionCount, sdlExtensions);
+
+
+  std::vector<const char *> extensions(sdlExtensions, sdlExtensions + sdlExtensionCount);
 
   if (enableValidationLayers) {
     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

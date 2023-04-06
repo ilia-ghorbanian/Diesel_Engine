@@ -17,7 +17,7 @@ class DslWindow {
 
     DslWindow(const DslWindow &) = delete;
     DslWindow &operator=(const DslWindow &) = delete;
-
+    auto getWindow(){return window;};
 
     void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
@@ -34,6 +34,6 @@ class DslWindow {
 
 
     
-};
+    };
 
 }
