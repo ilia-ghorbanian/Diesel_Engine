@@ -93,7 +93,7 @@ void DslDevice::createInstance() {
 
   auto extensions = getRequiredExtensions();
   createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-  createInfo.ppEnabledExtensionNames = &extensions[0];
+  createInfo.ppEnabledExtensionNames = extensions.data();
 
   VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
   if (enableValidationLayers) {
@@ -294,13 +294,14 @@ std::vector<const char *> DslDevice::getRequiredExtensions() {
 
 
   if (enableValidationLayers) {
-    s_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
   }
 
       std::vector<const char*> out;
+
       for (const std::string& s : s_extensions) out.push_back(s.c_str());
 
-  return out;
+  return extensions;
 }
 
 void DslDevice::hasGflwRequiredInstanceExtensions() {
