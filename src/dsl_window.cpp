@@ -40,14 +40,8 @@ namespace dsl{
 
     
     // void DslWindow::GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames){
-
     //     SDL_bool test = SDL_Vulkan_GetInstanceExtensions(window, pCount, NULL );
-
-
-    //     //SDL_bool lol = SDL_Vulkan_GetInstanceExtensions(window, pCount, &extensions_cstr[0] );
-
-
-        
+    //     //SDL_bool lol = SDL_Vulkan_GetInstanceExtensions(window, pCount, &extensions_cstr[0] );  
     // }
 
 
