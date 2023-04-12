@@ -294,11 +294,11 @@ std::vector<const char *> DslDevice::getRequiredExtensions() {
 
 
   if (enableValidationLayers) {
-    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    s_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
   }
 
       std::vector<const char*> out;
-      for (const std::string& s : extensions) out.push_back(s.c_str());
+      for (const std::string& s : s_extensions) out.push_back(s.c_str());
 
   return out;
 }
