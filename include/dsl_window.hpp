@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
+#include <vector>
 
 #include <string> 
 
@@ -18,6 +19,7 @@ class DslWindow {
     DslWindow &operator=(const DslWindow &) = delete;
     auto getWindow(){return window;};
 
+    void GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames);
     void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
 

@@ -6,6 +6,9 @@
 #include <set>
 #include <unordered_set>
 
+#include <stdio.h>
+#include <stdlib.h>
+
 
 
 namespace dsl {
@@ -105,7 +108,7 @@ void DslDevice::createInstance() {
 
   if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
     throw std::runtime_error("failed to create instance!");
-  }
+  }{std::cout << instance << std::endl;}
 
   hasGflwRequiredInstanceExtensions();
 }
@@ -269,12 +272,22 @@ std::vector<const char *> DslDevice::getRequiredExtensions() {
   // glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
   uint32_t sdlExtensionCount = 0;
-  const char **sdlExtensions;
-  
-  SDL_Vulkan_GetInstanceExtensions(window.getWindow(), &sdlExtensionCount, sdlExtensions);
+  //const char **sdlExtensions;
+  SDL_Vulkan_GetInstanceExtensions(window.getWindow(), &sdlExtensionCount, NULL);
 
 
-  std::vector<const char *> extensions(sdlExtensions, sdlExtensions + sdlExtensionCount);
+
+  std::vector<const char*> extensions_cstr(sdlExtensionCount);
+
+  //SDL_Vulkan_GetInstanceExtensions(window.getWindow(), &sdlExtensionCount, sdlExtensions);
+  window.GetSDLExtensions(&sdlExtensionCount, &extensions_cstr);
+
+
+
+
+  std::vector<const char *> extensions(extensions_cstr, sdlExtensions + sdlExtensionCount);
+
+
 
   if (enableValidationLayers) {
     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

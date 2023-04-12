@@ -1,6 +1,8 @@
 #include "dsl_window.hpp"
 #include <stdexcept>
 #include <vulkan/vulkan.h>
+#include <iostream>
+#include <vector>
 
 namespace dsl{
 
@@ -36,6 +38,29 @@ namespace dsl{
 
     }
 
+    
+    void DslWindow::GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames){
+                std::cout << *pCount << std::endl;
+
+        SDL_bool test = SDL_Vulkan_GetInstanceExtensions(window, pCount, NULL );
+        std::cout << *pCount << std::endl;
+        uint32_t testinglmao = *pCount;
+
+
+        std::vector<const char*> extensions_cstr(*pCount);
+
+        SDL_bool lol = SDL_Vulkan_GetInstanceExtensions(window, pCount, &extensions_cstr[0] );
+
+       
+        std::cout << test << std::endl;
+        std::cout << lol << std::endl;
+
+        
+    }
+
+
+
+    
     void DslWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface){
         if (SDL_Vulkan_CreateSurface(window, instance, surface) != VK_SUCCESS){
             throw std::runtime_error("Failed to create window surface");
@@ -44,6 +69,9 @@ namespace dsl{
             int i = 0;
         }
     }
+
+
+
 
 
 }
