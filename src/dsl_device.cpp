@@ -277,15 +277,12 @@ std::vector<const char *> DslDevice::getRequiredExtensions() {
 
 
 
-  std::vector<const char*> extensions_cstr(sdlExtensionCount);
+  std::vector<const char*> extensions(sdlExtensionCount);
+
+  SDL_Vulkan_GetInstanceExtensions(window.getWindow(), &sdlExtensionCount, &extensions[0]);
 
   //SDL_Vulkan_GetInstanceExtensions(window.getWindow(), &sdlExtensionCount, sdlExtensions);
-  window.GetSDLExtensions(&sdlExtensionCount, &extensions_cstr);
-
-
-
-
-  std::vector<const char *> extensions(extensions_cstr, sdlExtensions + sdlExtensionCount);
+  //window.GetSDLExtensions(&sdlExtensionCount, &extensions);
 
 
 

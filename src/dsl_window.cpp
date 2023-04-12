@@ -39,24 +39,16 @@ namespace dsl{
     }
 
     
-    void DslWindow::GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames){
-                std::cout << *pCount << std::endl;
+    // void DslWindow::GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames){
 
-        SDL_bool test = SDL_Vulkan_GetInstanceExtensions(window, pCount, NULL );
-        std::cout << *pCount << std::endl;
-        uint32_t testinglmao = *pCount;
+    //     SDL_bool test = SDL_Vulkan_GetInstanceExtensions(window, pCount, NULL );
 
 
-        std::vector<const char*> extensions_cstr(*pCount);
+    //     //SDL_bool lol = SDL_Vulkan_GetInstanceExtensions(window, pCount, &extensions_cstr[0] );
 
-        SDL_bool lol = SDL_Vulkan_GetInstanceExtensions(window, pCount, &extensions_cstr[0] );
-
-       
-        std::cout << test << std::endl;
-        std::cout << lol << std::endl;
 
         
-    }
+    // }
 
 
 

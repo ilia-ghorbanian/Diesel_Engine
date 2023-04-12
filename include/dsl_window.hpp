@@ -19,7 +19,7 @@ class DslWindow {
     DslWindow &operator=(const DslWindow &) = delete;
     auto getWindow(){return window;};
 
-    void GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames);
+    // void GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames); //DEPRECATED
     void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
 
