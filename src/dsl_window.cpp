@@ -23,7 +23,7 @@ namespace dsl{
 
 
     void DslWindow::initWindow(){
-        SDL_Init(SDL_INIT_VIDEO);
+        SDL_Init(SDL_INIT_EVERYTHING);
 
 
         SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_VULKAN);
@@ -34,7 +34,7 @@ namespace dsl{
             SDL_WINDOWPOS_UNDEFINED, // window position y (dont care)
             width,
             height,
-            window_flags);
+            SDL_WINDOW_VULKAN | SDL_WINDOW_SHOWN);
 
     }
 
@@ -48,16 +48,10 @@ namespace dsl{
 
     
     void DslWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface){
-        if (SDL_Vulkan_CreateSurface(window, instance, surface) != VK_SUCCESS){
+        
+        if (SDL_Vulkan_CreateSurface(window, instance, surface) != SDL_TRUE){
             throw std::runtime_error("Failed to create window surface");
         }
-        else{
-            int i = 0;
-        }
     }
-
-
-
-
 
 }

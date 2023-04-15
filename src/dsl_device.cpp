@@ -81,7 +81,7 @@ void DslDevice::createInstance() {
 
   VkApplicationInfo appInfo = {};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  appInfo.pApplicationName = "LittleVulkanEngine App";
+  appInfo.pApplicationName = "DieselEngine App";
   appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
   appInfo.pEngineName = "No Engine";
   appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -94,6 +94,7 @@ void DslDevice::createInstance() {
   auto extensions = getRequiredExtensions();
   createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
   createInfo.ppEnabledExtensionNames = extensions.data();
+
 
   VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
   if (enableValidationLayers) {
@@ -268,38 +269,24 @@ bool DslDevice::checkValidationLayerSupport() {
 
 std::vector<const char *> DslDevice::getRequiredExtensions() {
   
-  // uint32_t glfwExtensionCount = 0;
-  // const char **glfwExtensions;
-  // glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
+  //create a variable to store the number of required extensions
   uint32_t sdlExtensionCount = 0;
-  //const char **sdlExtensions;
+  //get the number of required extensions 
   SDL_Vulkan_GetInstanceExtensions(window.getWindow(), &sdlExtensionCount, NULL);
-
-
-
+  //create a c_srt vector to hold the name of all required extensions
   std::vector<const char*> extensions(sdlExtensionCount);
-  std::vector<std::string> s_extensions(sdlExtensionCount); 
+  //write them to the c_str vector
+  SDL_Vulkan_GetInstanceExtensions(window.getWindow(), &sdlExtensionCount, extensions.data());
 
   
-  
-
-  SDL_Vulkan_GetInstanceExtensions(window.getWindow(), &sdlExtensionCount, &extensions[0]);
-  for (unsigned int i = 0; i < sdlExtensionCount; i++) s_extensions[i] = extensions[i];
-
-  //SDL_Vulkan_GetInstanceExtensions(window.getWindow(), &sdlExtensionCount, sdlExtensions);
-  //window.GetSDLExtensions(&sdlExtensionCount, &extensions);
-
-
+  //window.GetSDLExtensions(&sdlExtensionCount, &extensions); //deprecated function
 
 
   if (enableValidationLayers) {
     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
   }
 
-      std::vector<const char*> out;
-
-      for (const std::string& s : s_extensions) out.push_back(s.c_str());
 
   return extensions;
 }
@@ -322,7 +309,7 @@ void DslDevice::hasGflwRequiredInstanceExtensions() {
   for (const auto &required : requiredExtensions) {
     std::cout << "\t" << required << std::endl;
     if (available.find(required) == available.end()) {
-      throw std::runtime_error("Missing required glfw extension");
+      throw std::runtime_error("Missing required SDL2 extension");
     }
   }
 }
