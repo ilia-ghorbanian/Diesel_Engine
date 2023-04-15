@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
 #include <vector>
-
+#include <vulkan/vulkan.h>
 #include <string> 
 
 //#define SDL_WINDOW_VULKAN
@@ -18,6 +18,8 @@ class DslWindow {
     DslWindow(const DslWindow &) = delete;
     DslWindow &operator=(const DslWindow &) = delete;
     auto getWindow(){return window;};
+
+    VkExtent2D getExtent() {return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
 
     // void GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames); //DEPRECATED
     void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
