@@ -6,10 +6,12 @@
 
 
 
+
 namespace dsl {
 
 
     FirstApp::FirstApp(){
+        loadModels();
         createPipelineLayout();
         createPipeline();
         createCommandBuffers();
@@ -34,6 +36,19 @@ namespace dsl {
             };
             vkDeviceWaitIdle(dslDevice.device());
         }
+    }
+
+
+    void FirstApp::loadModels() {
+
+        std::vector<DslModel::Vertex>  vertices {
+            {{0.0f, -0.5f}},
+            {{0.5f, 0.5f}},
+            {{-0.5f, 0.5f}}
+        };
+
+        dslModel = std::make_unique<DslModel>(dslDevice, vertices);
+
     }
 
 
@@ -102,7 +117,8 @@ namespace dsl {
             vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             dslPipeline->bind(commandBuffers[i]);
-            vkCmdDraw(commandBuffers[i], 3 ,1 ,0 ,0);
+            dslModel->bind(commandBuffers[i]);
+            dslModel->draw(commandBuffers[i]);
 
             vkCmdEndRenderPass(commandBuffers[i]);
             if(vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS){
