@@ -6,6 +6,8 @@ enable_testing()
 
 find_package(Vulkan REQUIRED)
 find_package(SDL2 REQUIRED)
+find_package(glm REQUIRED)
+
 
 
 
@@ -14,18 +16,15 @@ add_subdirectory(include/)
 add_subdirectory(src/)
 
 include_directories( ${Vulkan_INCLUDE_DIRS})
-
-
 include_directories( ${SDL2_INCLUDE_DIRS})
- 
+include_directories( ${glm_INCLUDE_DIRS})
 
 
 
 add_executable(main app/main.cpp)
 
 
-
-target_link_libraries(main SDL2 vulkan)
+target_link_libraries(main SDL2 vulkan glm)
 target_link_libraries(main dieselEngine)
 
 
