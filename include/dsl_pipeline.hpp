@@ -33,6 +33,10 @@ namespace dsl
             DslPipeline(const DslPipeline&) = delete;
             void operator=(const DslPipeline&) = delete;
 
+
+            void bind(VkCommandBuffer commandBuffer);
+
+
             static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t width, uint32_t height);
 
         private:
