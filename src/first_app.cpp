@@ -32,6 +32,7 @@ namespace dsl {
                 running = 0;
                 }
             };
+            vkDeviceWaitIdle(dslDevice.device());
         }
     }
 
