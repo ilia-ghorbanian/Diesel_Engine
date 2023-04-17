@@ -20,17 +20,21 @@ class DslWindow {
     auto getWindow(){return window;};
 
     VkExtent2D getExtent() {return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
+    bool wasWindowResized() {return framebufferResized;}
+    void resetWindowResized() {framebufferResized = false;}
 
     // void GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames); //DEPRECATED
     void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
 
     private:
-    
+
+    static void framebufferResizeCallback(SDL_Window *window, int width, int height);
     void initWindow();
 
-    const int width;
-    const int height;
+    int width;
+    int height;
+    bool framebufferResized = false;
 
     std::string windowName;
     SDL_Window *window;

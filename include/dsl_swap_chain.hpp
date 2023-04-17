@@ -19,7 +19,7 @@ class DslSwapChain {
   ~DslSwapChain();
 
   DslSwapChain(const DslSwapChain &) = delete;
-  void operator=(const DslSwapChain &) = delete;
+  DslSwapChain& operator=(const DslSwapChain &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
   VkRenderPass getRenderPass() { return renderPass; }

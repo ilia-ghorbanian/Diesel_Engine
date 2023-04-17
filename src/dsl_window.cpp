@@ -26,7 +26,7 @@ namespace dsl{
         SDL_Init(SDL_INIT_EVERYTHING);
 
 
-        SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_VULKAN);
+        SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
 
         window = SDL_CreateWindow(
             windowName.c_str(),
@@ -34,7 +34,7 @@ namespace dsl{
             SDL_WINDOWPOS_UNDEFINED, // window position y (dont care)
             width,
             height,
-            SDL_WINDOW_VULKAN | SDL_WINDOW_SHOWN);
+            window_flags);
 
     }
 
@@ -53,5 +53,12 @@ namespace dsl{
             throw std::runtime_error("Failed to create window surface");
         }
     }
+
+
+
+    void DslWindow::framebufferResizeCallback(SDL_Window *window, int width, int height){};
+        //auto dslWindow = reinterpret_cast<dslWindow *> 
+
+
 
 }

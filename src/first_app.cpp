@@ -27,12 +27,23 @@ namespace dsl {
 
         while(running){
             SDL_Event event;
+            
             while(SDL_PollEvent(&event)){
+                if(event.type == SDL_WINDOWEVENT){
+                    if(event.window.event == SDL_WINDOWEVENT_RESIZED){
+
+                std::cout << "_________________window resized IG AAAA _________________\n";
+                std::cout << "_________________window resized IG AAAA _________________\n";
+                std::cout << "_________________window resized IG AAAA _________________\n";
+                std::cout << "_________________window resized IG AAAA _________________\n";
+                    }
+            }
                 drawFrame();
 
             if (event.type == SDL_QUIT){
                 running = 0;
                 }
+            
             };
             vkDeviceWaitIdle(dslDevice.device());
         }
@@ -60,6 +71,24 @@ namespace dsl {
     //             sierpinski(vertices, depth - 1, leftTop, rightTop, top);
     // };
     //     }
+
+
+    void FirstApp::EventHandlerTest(){
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type){
+                case SDL_EventType::SDL_WINDOWEVENT:
+                    if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED){
+                        std::cout << "test worked ig?" << std::endl;
+                    };
+            }
+        }
+    }
+
+
+
+
 
 
 
@@ -160,11 +189,14 @@ namespace dsl {
         auto result = dslSwapChain.acquireNextImage(&imageIndex);
 
         if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR){
-            throw std::runtime_error("failed to qcquire swap chain image");
+            throw std::runtime_error("failed to acquire swap chain image");
         }
-
         result = dslSwapChain.submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
         if (result !=VK_SUCCESS){
+            if (result == VK_ERROR_OUT_OF_DATE_KHR){
+                std::cout << "lol" << std::endl;
+                EventHandlerTest();
+            }
             throw std::runtime_error("failed to present swap chain image");
         }
     };

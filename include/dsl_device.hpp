@@ -36,7 +36,7 @@ class DslDevice {
 
   // Not copyable or movable
   DslDevice(const DslDevice &) = delete;
-  void operator=(const DslDevice &) = delete;
+  DslDevice& operator=(const DslDevice &) = delete;
   DslDevice(DslDevice &&) = delete;
   DslDevice &operator=(DslDevice &&) = delete;
 

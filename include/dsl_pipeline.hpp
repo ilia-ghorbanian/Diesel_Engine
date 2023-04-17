@@ -31,7 +31,7 @@ namespace dsl
 
             ~DslPipeline();
             DslPipeline(const DslPipeline&) = delete;
-            void operator=(const DslPipeline&) = delete;
+            DslPipeline& operator=(const DslPipeline&) = delete;
 
 
             void bind(VkCommandBuffer commandBuffer);

@@ -23,6 +23,7 @@ namespace dsl {
     FirstApp &operator=(const FirstApp &) = delete;
     
     void run();
+    void EventHandlerTest();
 
         private:
 
