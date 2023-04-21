@@ -114,7 +114,12 @@ namespace dsl {
 
 
     void FirstApp::createPipeline(){
-        auto pipelineConfig = DslPipeline::defaultPipelineConfigInfo(dslSwapChain->width(), dslSwapChain->height());
+        assert(dslSwapChain != nullptr && "Cannot create pipeline before swapchain");
+        assert(pipelineLayout != nullptr && "Cannot create pipeline before layout");
+
+        PipelineConfigInfo pipelineConfig{};
+
+        DslPipeline::defaultPipelineConfigInfo(pipelineConfig);
         pipelineConfig.renderPass = dslSwapChain->getRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
         dslPipeline = std::make_unique<DslPipeline>(dslDevice, "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv", pipelineConfig);
@@ -129,8 +134,18 @@ namespace dsl {
         }
 
         vkDeviceWaitIdle(dslDevice.device());
-        dslSwapChain = nullptr;
+        if(dslSwapChain == nullptr){
+        //dslSwapChain = nullptr;
         dslSwapChain = std::make_unique<DslSwapChain>(dslDevice, extent);
+        }else{
+            dslSwapChain = std::make_unique<DslSwapChain>(dslDevice, extent, std::move(dslSwapChain));
+
+            if(dslSwapChain->imageCount() != commandBuffers.size()){
+                freeCommandBuffers();
+                createCommandBuffers();
+            }
+        }
+        
         createPipeline();
     }
 
@@ -147,9 +162,15 @@ namespace dsl {
         if (vkAllocateCommandBuffers(dslDevice.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS){
             throw std::runtime_error("failed to allocate command buffers");
         }
-
-
     }
+
+
+    void FirstApp::freeCommandBuffers(){
+        vkFreeCommandBuffers(dslDevice.device(), dslDevice.getCommandPool(), static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+        commandBuffers.clear();
+    }
+
+
 
     void FirstApp::recordCommandbuffer(int imageIndex){
                     VkCommandBufferBeginInfo beginInfo{};
@@ -177,6 +198,21 @@ namespace dsl {
             renderPassInfo.pClearValues = clearValues.data();
 
             vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+
+            VkViewport viewport{};
+            viewport.x = 0.0f;
+            viewport.y = 0.0f;
+            viewport.width = static_cast<float>(dslSwapChain->getSwapChainExtent().width);
+            viewport.height = static_cast<float>(dslSwapChain->getSwapChainExtent().height);
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+            VkRect2D scissor{{0,0}, dslSwapChain->getSwapChainExtent()};
+            vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+            vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
+
+
+
 
             dslPipeline->bind(commandBuffers[imageIndex]);
             dslModel->bind(commandBuffers[imageIndex]);

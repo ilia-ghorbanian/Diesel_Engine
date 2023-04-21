@@ -6,6 +6,7 @@
 #include <vulkan/vulkan.h>
 
 // std lib headers
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -16,6 +17,7 @@ class DslSwapChain {
   static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
   DslSwapChain(DslDevice &deviceRef, VkExtent2D windowExtent);
+  DslSwapChain(DslDevice &deviceRef, VkExtent2D windowExtent, std::shared_ptr<DslSwapChain> previous);
   ~DslSwapChain();
 
   DslSwapChain(const DslSwapChain &) = delete;
@@ -39,6 +41,7 @@ class DslSwapChain {
   VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
  private:
+  void init();
   void createSwapChain();
   void createImageViews();
   void createDepthResources();
@@ -69,7 +72,8 @@ class DslSwapChain {
   VkExtent2D windowExtent;
 
   VkSwapchainKHR swapChain;
-
+  std::shared_ptr<DslSwapChain> oldSwapChain;
+  
   std::vector<VkSemaphore> imageAvailableSemaphores;
   std::vector<VkSemaphore> renderFinishedSemaphores;
   std::vector<VkFence> inFlightFences;

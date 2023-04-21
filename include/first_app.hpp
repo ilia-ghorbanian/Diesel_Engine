@@ -38,6 +38,7 @@ namespace dsl {
         void createPipelineLayout();
         void createPipeline();
         void createCommandBuffers();
+        void freeCommandBuffers();
         void drawFrame();
         void recreateSwapchain();
         void recordCommandbuffer(int imgIndex);
