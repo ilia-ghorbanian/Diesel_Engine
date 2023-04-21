@@ -13,7 +13,7 @@ namespace dsl {
     FirstApp::FirstApp(){
         loadModels();
         createPipelineLayout();
-        createPipeline();
+        recreateSwapchain();
         createCommandBuffers();
     }
 
@@ -29,22 +29,13 @@ namespace dsl {
             SDL_Event event;
             
             while(SDL_PollEvent(&event)){
-                if(event.type == SDL_WINDOWEVENT){
-                    if(event.window.event == SDL_WINDOWEVENT_RESIZED){
-
-                std::cout << "_________________window resized IG AAAA _________________\n";
-                std::cout << "_________________window resized IG AAAA _________________\n";
-                std::cout << "_________________window resized IG AAAA _________________\n";
-                std::cout << "_________________window resized IG AAAA _________________\n";
-                    }
-            }
-                drawFrame();
 
             if (event.type == SDL_QUIT){
                 running = 0;
                 }
             
             };
+            drawFrame();
             vkDeviceWaitIdle(dslDevice.device());
         }
     }
@@ -123,16 +114,30 @@ namespace dsl {
 
 
     void FirstApp::createPipeline(){
-        auto pipelineConfig = DslPipeline::defaultPipelineConfigInfo(dslSwapChain.width(), dslSwapChain.height());
-        pipelineConfig.renderPass = dslSwapChain.getRenderPass();
+        auto pipelineConfig = DslPipeline::defaultPipelineConfigInfo(dslSwapChain->width(), dslSwapChain->height());
+        pipelineConfig.renderPass = dslSwapChain->getRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
         dslPipeline = std::make_unique<DslPipeline>(dslDevice, "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv", pipelineConfig);
+    }
+
+    void FirstApp::recreateSwapchain(){
+        auto extent = dslWindow.getExtent();
+        while (extent.width == 0 || extent.height == 0){
+            extent = dslWindow.getExtent();
+            SDL_Event event;
+            SDL_WaitEvent(&event);
+        }
+
+        vkDeviceWaitIdle(dslDevice.device());
+        dslSwapChain = nullptr;
+        dslSwapChain = std::make_unique<DslSwapChain>(dslDevice, extent);
+        createPipeline();
     }
 
 
     void FirstApp::createCommandBuffers(){
 
-        commandBuffers.resize(dslSwapChain.imageCount());
+        commandBuffers.resize(dslSwapChain->imageCount());
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -143,22 +148,25 @@ namespace dsl {
             throw std::runtime_error("failed to allocate command buffers");
         }
 
-        for (int i = 0; i < commandBuffers.size(); i++){
-            VkCommandBufferBeginInfo beginInfo{};
+
+    }
+
+    void FirstApp::recordCommandbuffer(int imageIndex){
+                    VkCommandBufferBeginInfo beginInfo{};
             beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-            if(vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS){
+            if(vkBeginCommandBuffer(commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS){
 
                 throw std::runtime_error("failed to begin recording command buffer");
             }
 
             VkRenderPassBeginInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-            renderPassInfo.renderPass = dslSwapChain.getRenderPass();
-            renderPassInfo.framebuffer = dslSwapChain.getFrameBuffer(i);
+            renderPassInfo.renderPass = dslSwapChain->getRenderPass();
+            renderPassInfo.framebuffer = dslSwapChain->getFrameBuffer(imageIndex);
 
             renderPassInfo.renderArea.offset = {0,0};
-            renderPassInfo.renderArea.extent = dslSwapChain.getSwapChainExtent();
+            renderPassInfo.renderArea.extent = dslSwapChain->getSwapChainExtent();
 
             std::array<VkClearValue, 2> clearValues{};
             clearValues[0].color = {0.1f, 0.1f, 0.1f, 0.1f};
@@ -168,30 +176,39 @@ namespace dsl {
             renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
             renderPassInfo.pClearValues = clearValues.data();
 
-            vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+            vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-            dslPipeline->bind(commandBuffers[i]);
-            dslModel->bind(commandBuffers[i]);
-            dslModel->draw(commandBuffers[i]);
+            dslPipeline->bind(commandBuffers[imageIndex]);
+            dslModel->bind(commandBuffers[imageIndex]);
+            dslModel->draw(commandBuffers[imageIndex]);
 
-            vkCmdEndRenderPass(commandBuffers[i]);
-            if(vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS){
+            vkCmdEndRenderPass(commandBuffers[imageIndex]);
+            if(vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS){
                 throw std::runtime_error("failed to record command buffer");
             }
-        }
-
     }
-
 
     void FirstApp::drawFrame(){
 
         uint32_t imageIndex;
-        auto result = dslSwapChain.acquireNextImage(&imageIndex);
+        auto result = dslSwapChain->acquireNextImage(&imageIndex);
 
+        if (result == VK_ERROR_OUT_OF_DATE_KHR){
+            recreateSwapchain();
+            return;
+        }
+
+    
         if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR){
             throw std::runtime_error("failed to acquire swap chain image");
         }
-        result = dslSwapChain.submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+        recordCommandbuffer(imageIndex);
+        result = dslSwapChain->submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || dslWindow.wasWindowResized()){
+            dslWindow.resetWindowResizedFlag();
+            recreateSwapchain();
+            return;
+        }
         if (result !=VK_SUCCESS){
             if (result == VK_ERROR_OUT_OF_DATE_KHR){
                 std::cout << "lol" << std::endl;

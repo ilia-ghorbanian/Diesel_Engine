@@ -20,7 +20,27 @@ namespace dsl{
 
 
 
+int DslWindow::event_watch(void* userdata, SDL_Event* event)
+{
+    if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) {
+        printf("Window resized: %dx%d\n", event->window.data1, event->window.data2);
+        SDL_Window* window = static_cast<SDL_Window*>(userdata);
+        auto dslWindow = reinterpret_cast<DslWindow *>(SDL_GetWindowData(window, "windowUserData"));
+                int w,h;
+        SDL_GetWindowSize(dslWindow->getWindow(),&w,&h);
+        printf("Window resized: %dx%d\n", w, h);
+        dslWindow->framebufferResized = true;
+        dslWindow->width = event->window.data1;
+        dslWindow->height = event->window.data2;
 
+        
+        
+        //framebufferResizeCallback(window ,event->window.data1, event->window.data1);
+
+        // Recreate the swapchain and update the render targets here
+    }
+    return 0;
+}
 
     void DslWindow::initWindow(){
         SDL_Init(SDL_INIT_EVERYTHING);
@@ -35,6 +55,9 @@ namespace dsl{
             width,
             height,
             window_flags);
+            SDL_SetWindowData(window, "windowUserData", this);
+            SDL_AddEventWatch(event_watch, window);
+            std::cout << "heh\n";
 
     }
 
@@ -56,9 +79,13 @@ namespace dsl{
 
 
 
-    void DslWindow::framebufferResizeCallback(SDL_Window *window, int width, int height){};
-        //auto dslWindow = reinterpret_cast<dslWindow *> 
-
+    void DslWindow::framebufferResizeCallback(SDL_Window *window, int width, int height){;
+        auto dslWindow = reinterpret_cast<DslWindow *> (SDL_GetWindowData(window, "windowUserData"));
+        dslWindow->framebufferResized = true;
+        dslWindow->width = width;
+        dslWindow-> height = height;
+    
+    }
 
 
 }

@@ -39,11 +39,14 @@ namespace dsl {
         void createPipeline();
         void createCommandBuffers();
         void drawFrame();
+        void recreateSwapchain();
+        void recordCommandbuffer(int imgIndex);
 
 
         DslWindow dslWindow{WIDTH, HEIGHT, "Vulkan Stuff IG!?!"};
         DslDevice dslDevice{dslWindow};
-        DslSwapChain dslSwapChain{dslDevice, dslWindow.getExtent()};
+        // DslSwapChain dslSwapChain{dslDevice, dslWindow.getExtent()};
+        std::unique_ptr<DslSwapChain> dslSwapChain;
         std::unique_ptr<DslPipeline> dslPipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;

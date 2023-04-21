@@ -15,13 +15,14 @@ class DslWindow {
     DslWindow(int w, int h, std::string name);
     ~DslWindow();
 
+    static int event_watch(void* userdata, SDL_Event* event);
     DslWindow(const DslWindow &) = delete;
     DslWindow &operator=(const DslWindow &) = delete;
     auto getWindow(){return window;};
 
     VkExtent2D getExtent() {return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
     bool wasWindowResized() {return framebufferResized;}
-    void resetWindowResized() {framebufferResized = false;}
+    void resetWindowResizedFlag() {framebufferResized = false;}
 
     // void GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames); //DEPRECATED
     void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
