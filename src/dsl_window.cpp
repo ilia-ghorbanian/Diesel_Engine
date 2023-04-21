@@ -56,8 +56,14 @@ namespace dsl{
 
 
 
-    void DslWindow::framebufferResizeCallback(SDL_Window *window, int width, int height){};
-        //auto dslWindow = reinterpret_cast<dslWindow *> 
+    void DslWindow::framebufferResizeCallback(SDL_Window *window, int width, int height){;
+        auto dslWindow = reinterpret_cast<DslWindow *>(window);
+        dslWindow->framebufferResized = true;
+        dslWindow->width = width;
+        dslWindow->height = height;
+    
+    
+    }
 
 
 

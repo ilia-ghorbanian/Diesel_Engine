@@ -26,7 +26,7 @@ class DslWindow {
     // void GetSDLExtensions(unsigned int *pCount, std::vector<const char*> * pNames); //DEPRECATED
     void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
-
+    void doResized(SDL_Window *window, int width, int height){framebufferResizeCallback(window, width, height);}
     private:
 
     static void framebufferResizeCallback(SDL_Window *window, int width, int height);

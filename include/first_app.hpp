@@ -23,7 +23,7 @@ namespace dsl {
     FirstApp &operator=(const FirstApp &) = delete;
     
     void run();
-    void EventHandlerTest();
+    void EventHandlerTest(DslWindow *window);
 
         private:
 
@@ -38,12 +38,15 @@ namespace dsl {
         void createPipelineLayout();
         void createPipeline();
         void createCommandBuffers();
-        void drawFrame();
+        void drawFrame(DslWindow *dslWindow);
+        void recreateSwapchain();
+        void recordComandbuffer(int imgIndex);
 
 
         DslWindow dslWindow{WIDTH, HEIGHT, "Vulkan Stuff IG!?!"};
         DslDevice dslDevice{dslWindow};
-        DslSwapChain dslSwapChain{dslDevice, dslWindow.getExtent()};
+        std::unique_ptr<DslSwapChain> dslSwapChain;
+        //DslSwapChain dslSwapChain{dslDevice, dslWindow.getExtent()};
         std::unique_ptr<DslPipeline> dslPipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
