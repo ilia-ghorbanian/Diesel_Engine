@@ -22,6 +22,8 @@ namespace dsl {
     FirstApp(const FirstApp &) = delete;
     FirstApp &operator=(const FirstApp &) = delete;
     
+
+    bool IsCursorOverWindowBorder(SDL_Window* window, int x, int y); 
     void run();
     void EventHandlerTest();
 

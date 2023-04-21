@@ -21,32 +21,125 @@ namespace dsl {
         vkDestroyPipelineLayout(dslDevice.device(), pipelineLayout, nullptr);
     }
 
+
+
+    bool FirstApp::IsCursorOverWindowBorder(SDL_Window* window, int x, int y) {
+    int windowWidth, windowHeight;
+    int borderLeft, borderRight, borderTop, borderBottom;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+    SDL_GetWindowBordersSize(window, &borderTop, &borderLeft, &borderBottom, &borderRight);
+    int left = borderLeft;
+    int right = windowWidth + borderLeft;
+    int top = borderTop;
+    int bottom = windowHeight + borderTop;
+
+    if (x >= left && x < right && y >= top && y < bottom) {
+        return false;
+    }
+
+    return true;
+}
     void FirstApp::run() {
 
         bool running = true;
+        bool resizing = false;
 
         while(running){
             SDL_Event event;
             
             while(SDL_PollEvent(&event)){
-                if(event.type == SDL_WINDOWEVENT){
-                    if(event.window.event == SDL_WINDOWEVENT_RESIZED){
-
-                std::cout << "_________________window resized IG AAAA _________________\n";
-                std::cout << "_________________window resized IG AAAA _________________\n";
-                std::cout << "_________________window resized IG AAAA _________________\n";
-                std::cout << "_________________window resized IG AAAA _________________\n";
+                switch (event.type)
+                {
+                case SDL_QUIT:
+                    running = false;
+                    break;
+                
+                case SDL_MOUSEBUTTONDOWN:
+                    if (event.button.button == SDL_BUTTON_LEFT) {
+                        SDL_CaptureMouse(SDL_TRUE);
+                        int x = event.button.x;
+                        int y = event.button.y;
+                        if (IsCursorOverWindowBorder(dslWindow.getWindow(), x, y)) {
+                            resizing = true;
+                            std::cout << "on border AngelThump\n";
+                            SDL_CaptureMouse(SDL_TRUE);
+                        }
                     }
-            }
-                drawFrame();
+                
+                
+                
+                    // if (event.button.button == SDL_BUTTON_LEFT) {
+                    //     // Check if cursor is over window client area
+                    //     int mouseX, mouseY;
+                    //     Uint32 mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+                    //     int windowX, windowY, windowW, windowH;
+                    //     SDL_GetWindowPosition(dslWindow.getWindow(), &windowX, &windowY);
+                    //     SDL_GetWindowSize(dslWindow.getWindow(), &windowW, &windowH);
+                    //     int borderWidth, borderHeight;
+                        
+                    //     SDL_GetWindowBordersSize(dslWindow.getWindow(), &borderWidth, &borderHeight, NULL, NULL);
+                    //     std::cout << "here ig\n";
+                    //     if ((mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) &&
+                    //         (mouseX >= windowX && mouseX < (windowX + windowW - borderWidth)) &&
+                    //         (mouseY >= windowY && mouseY < (windowY + windowH - borderHeight))) {
+                    //         // Cursor is over window client area
+                    //         resizing = true;
+                    //         SDL_CaptureMouse(SDL_TRUE); // Capture mouse events
+                    //         std::cout << "grabbing border?\n";
+                    //     }
+                    // }
+                    break;
 
-            if (event.type == SDL_QUIT){
-                running = 0;
+                case SDL_MOUSEBUTTONUP:
+                    if (event.button.button == SDL_BUTTON_LEFT) {
+                        // Check if we were resizing the window
+                        if (resizing) {
+                            resizing = false;
+                            SDL_CaptureMouse(SDL_FALSE); // Release mouse events
+                            SDL_Delay(16); // Delay to avoid potential race condition
+                            
+                        }
+                    }
+
+                case SDL_MOUSEMOTION:
+                    if (resizing) {
+                        // Handle window resize event
+                        int width = event.motion.x;
+                        int height = event.motion.y;
+                        std::cout << "i'm mOOOOving OOOO\n";
+                        // Update swap chain and rendering pipeline here
+                    }
+                
+                default:
+                    break;
                 }
+                if(!resizing){
+                    drawFrame();
+                }else{
+                    // Resizing in progress, pause rendering temporarily
+                    SDL_Delay(16);
+                    vkDeviceWaitIdle(dslDevice.device());
+                }
+
+            //     if(event.type == SDL_WINDOWEVENT){
+            //         if(event.window.event == SDL_WINDOWEVENT_RESIZED){
+
+            //     std::cout << "_________________window resized IG AAAA _________________\n";
+            //     std::cout << "_________________window resized IG AAAA _________________\n";
+            //     std::cout << "_________________window resized IG AAAA _________________\n";
+            //     std::cout << "_________________window resized IG AAAA _________________\n";
+            //         }
+            // }
+            //     drawFrame();
+
+            // if (event.type == SDL_QUIT){
+            //     running = 0;
+            //     }
             
-            };
-            vkDeviceWaitIdle(dslDevice.device());
+            // };
+            
         }
+    }
     }
 
 
