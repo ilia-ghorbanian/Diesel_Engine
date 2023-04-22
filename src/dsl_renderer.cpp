@@ -47,7 +47,18 @@ namespace dsl {
     //     }
 
 
-
+    void DslRenderer::EventHandlerTest(){
+            SDL_Event event;
+            while (SDL_PollEvent(&event))
+            {
+                switch (event.type){
+                    case SDL_EventType::SDL_WINDOWEVENT:
+                        if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED){
+                            std::cout << "test worked ig?" << std::endl;
+                        };
+                }
+            }
+        }
 
     void DslRenderer::recreateSwapchain(){
         auto extent = dslWindow.getExtent();
@@ -141,6 +152,10 @@ namespace dsl {
         }
 
         if (result !=VK_SUCCESS){
+            if (result == VK_ERROR_OUT_OF_DATE_KHR){
+                std::cout << "lol" << std::endl;
+                EventHandlerTest();
+            } 
             throw std::runtime_error("failed to present swap chain image");
         }
 

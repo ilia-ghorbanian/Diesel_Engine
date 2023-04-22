@@ -35,7 +35,7 @@ namespace dsl {
     void endFrame();
     void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
     void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
-
+    void EventHandlerTest();
 
         private:
 
