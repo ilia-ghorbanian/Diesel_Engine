@@ -76,12 +76,17 @@ namespace dsl {
         //dslSwapChain = nullptr;
         dslSwapChain = std::make_unique<DslSwapChain>(dslDevice, extent);
         }else{
-            dslSwapChain = std::make_unique<DslSwapChain>(dslDevice, extent, std::move(dslSwapChain));
+            std::shared_ptr<DslSwapChain> oldSwapChain = std::move(dslSwapChain);
+            dslSwapChain = std::make_unique<DslSwapChain>(dslDevice, extent, oldSwapChain);
 
-            if(dslSwapChain->imageCount() != commandBuffers.size()){
-                freeCommandBuffers();
-                createCommandBuffers();
+            if (!oldSwapChain->compareSwapChainFormats(*dslSwapChain.get())){
+                throw std::runtime_error("Swap chain image(or depth) format has changed");
             }
+
+            // if(dslSwapChain->imageCount() != commandBuffers.size()){
+            //     freeCommandBuffers();
+            //     createCommandBuffers();
+            // }
         }
         
         //TODO COME BACK TO
@@ -90,7 +95,7 @@ namespace dsl {
 
     void DslRenderer::createCommandBuffers(){
 
-        commandBuffers.resize(dslSwapChain->imageCount());
+        commandBuffers.resize(DslSwapChain::MAX_FRAMES_IN_FLIGHT);
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -165,6 +170,7 @@ namespace dsl {
         }
 
         isFrameStarted = false;
+        currentFrameIndex = (currentFrameIndex + 1) % DslSwapChain::MAX_FRAMES_IN_FLIGHT;
     };
 
 

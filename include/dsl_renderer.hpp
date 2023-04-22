@@ -25,11 +25,14 @@ namespace dsl {
 
     VkCommandBuffer getCurrentCommandBuffer() const{
         assert(isFrameStarted && "Cannot get command buffer when frame is not in progress");
-        return commandBuffers[currentImageIndex];
+        return commandBuffers[currentFrameIndex];
     }
 
 
-
+    int getFrameIndex() const {
+        assert(isFrameStarted && "Cannot get frame index when frame is not in progress");
+        return currentFrameIndex;
+    }
     VkCommandBuffer beginFrame();
     void endFrame();
     void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
@@ -63,6 +66,7 @@ namespace dsl {
         std::vector<VkCommandBuffer> commandBuffers;
 
         uint32_t currentImageIndex;
+        int currentFrameIndex;
         bool isFrameStarted = false;
 
         //DslPipeline dslPipeline{dslDevice, "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv", DslPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
