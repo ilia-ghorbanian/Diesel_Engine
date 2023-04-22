@@ -26,6 +26,11 @@ namespace dsl{
         }
     };
 
+    struct RigidBody2dComponent {
+        glm::vec2 velocity;
+        float mass{1.0f};
+    };
+
     class DslGameObject {
 
         public:
@@ -49,6 +54,7 @@ namespace dsl{
         std::shared_ptr<DslModel> model{};
         glm::vec3 color{};
         Transform2dComponent transform2d{};
+        RigidBody2dComponent rigidBody2d{};
 
         private:
         DslGameObject(id_t objId) : id{objId}{};

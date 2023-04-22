@@ -18,9 +18,25 @@
 namespace dsl {
 
 
+std::unique_ptr<DslModel> createCircleModel(DslDevice& device, unsigned int numSides) {
+  std::vector<DslModel::Vertex> uniqueVertices{};
+  for (int i = 0; i < numSides; i++) {
+    float angle = i * glm::two_pi<float>() / numSides;
+    uniqueVertices.push_back({{glm::cos(angle), glm::sin(angle)}});
+  }
+  uniqueVertices.push_back({});  // adds center vertex at 0, 0
+ 
+  std::vector<DslModel::Vertex> vertices{};
+  for (int i = 0; i < numSides; i++) {
+    vertices.push_back(uniqueVertices[i]);
+    vertices.push_back(uniqueVertices[(i + 1) % numSides]);
+    vertices.push_back(uniqueVertices[numSides]);
+  }
+  return std::make_unique<DslModel>(device, vertices);
+}
+
     FirstApp::FirstApp(){
         loadGameObjects();
-;
     }
 
     FirstApp::~FirstApp(){}
@@ -103,15 +119,25 @@ namespace dsl {
         // sierpinski(vertices, 5, {-0.5f, 0.5f}, {0.5f, 0.5f}, {0.0f, -0.5f});
 
         auto dslModel = std::make_shared<DslModel>(dslDevice, vertices);
+        
+        std::shared_ptr<DslModel> circleModel = createCircleModel(dslDevice, 100);
 
         auto triangle = DslGameObject::createGameObject();
+        auto circle = DslGameObject::createGameObject();
         triangle.model = dslModel;
         triangle.color = {0.1f, .8f, .1f};
         triangle.transform2d.translation.x = .2f;
         triangle.transform2d.scale = {2.f, .5f};
         triangle.transform2d.rotation = .25f * glm::two_pi<float>();
 
+        circle.model = circleModel;
+        circle.color = {1.f, .8f, .1f};
+        circle.transform2d.translation.x = -.5f;
+        circle.transform2d.scale = {.5f, .5f};
+        triangle.transform2d.rotation = 0;
+        
         gameObjects.push_back(std::move(triangle));
+        gameObjects.push_back(std::move(circle));
 
     }
 
