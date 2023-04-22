@@ -1,8 +1,7 @@
 #pragma once
 
 #include "dsl_device.hpp"
-#include "dsl_window.hpp"
-#include "dsl_renderer.hpp"
+#include "dsl_pipeline.hpp"
 //#include "dsl_model.hpp"
 #include "dsl_game_object.hpp"
 
@@ -11,20 +10,19 @@
 
 namespace dsl {
 
-    class FirstApp {
+    class SimpleRenderSystem {
         public:
-        static constexpr int WIDTH = 800;
-        static constexpr int HEIGHT = 600;
+
     
 
-    FirstApp();
-    ~FirstApp();
+    SimpleRenderSystem(DslDevice &device, VkRenderPass renderPass);
+    ~SimpleRenderSystem();
 
-    FirstApp(const FirstApp &) = delete;
-    FirstApp &operator=(const FirstApp &) = delete;
+    SimpleRenderSystem(const SimpleRenderSystem &) = delete;
+    SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
+
+    void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<DslGameObject> &gameObjects);
     
-    void run();
-    void EventHandlerTest();
 
         private:
 
@@ -35,15 +33,16 @@ namespace dsl {
         // glm::vec2 right,
         // glm::vec2 top); 
 
-        void loadGameObjects();
+        void createPipelineLayout();
+        void createPipeline(VkRenderPass renderPass);
+        
 
 
-        DslWindow dslWindow{WIDTH, HEIGHT, "Vulkan Stuff IG!?!"};
-        DslDevice dslDevice{dslWindow};
-        DslRenderer dslRenderer{dslWindow, dslDevice};
+        DslDevice &dslDevice;
         // DslSwapChain dslSwapChain{dslDevice, dslWindow.getExtent()};
 
-        std::vector<DslGameObject> gameObjects;
+        std::unique_ptr<DslPipeline> dslPipeline;
+        VkPipelineLayout pipelineLayout;
 
         //DslPipeline dslPipeline{dslDevice, "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv", DslPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
         

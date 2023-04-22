@@ -1,6 +1,8 @@
 #include "first_app.hpp"
 #include <iostream>
 
+#include "simple_render_system.hpp"
+
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
@@ -16,24 +18,15 @@
 namespace dsl {
 
 
-    struct SimplePushConstantData {
-        glm::mat2 transform{1.f};
-        glm::vec2 offset;
-        alignas(16)glm::vec3 color;
-    };
-
-
     FirstApp::FirstApp(){
         loadGameObjects();
-        createPipelineLayout();
-        createPipeline();
+;
     }
 
-    FirstApp::~FirstApp(){
-        vkDestroyPipelineLayout(dslDevice.device(), pipelineLayout, nullptr);
-    }
+    FirstApp::~FirstApp(){}
 
     void FirstApp::run() {
+        SimpleRenderSystem simpleRenderSystem{dslDevice, dslRenderer.getSwapChainRenderPass()};
 
         bool running = true;
 
@@ -49,7 +42,7 @@ namespace dsl {
             };
             if (auto commandBuffer = dslRenderer.beginFrame()){
                 dslRenderer.beginSwapChainRenderPass(commandBuffer);
-                renderGameObjects(commandBuffer);
+                simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects);
                 dslRenderer.endSwapChainRenderPass(commandBuffer);
                 dslRenderer.endFrame();
             }
@@ -122,65 +115,6 @@ namespace dsl {
 
     }
 
-
-
-    void FirstApp::createPipelineLayout(){
-
-
-        VkPushConstantRange pushConstantRange{};
-        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-        pushConstantRange.offset = 0;
-        pushConstantRange.size = sizeof(SimplePushConstantData);
-
-
-        VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{};
-        pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutCreateInfo.setLayoutCount = 0;
-        pipelineLayoutCreateInfo.pSetLayouts = nullptr;
-        pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
-        pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
-
-        if(vkCreatePipelineLayout(dslDevice.device(), &pipelineLayoutCreateInfo, nullptr, &pipelineLayout) != VK_SUCCESS){
-            throw std::runtime_error("failed to create pipeline layout");
-        }
-    }
-
-
-    void FirstApp::createPipeline(){
-        assert(pipelineLayout != nullptr && "Cannot create pipeline before layout");
-
-        PipelineConfigInfo pipelineConfig{};
-
-        DslPipeline::defaultPipelineConfigInfo(pipelineConfig);
-        pipelineConfig.renderPass = dslRenderer.getSwapChainRenderPass();
-        pipelineConfig.pipelineLayout = pipelineLayout;
-        dslPipeline = std::make_unique<DslPipeline>(dslDevice, "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv", pipelineConfig);
-    }
-
-
-
-
-
-
-    void FirstApp::renderGameObjects(VkCommandBuffer commandBuffer){
-        dslPipeline->bind(commandBuffer);
-
-        for (auto& obj : gameObjects){
-
-                obj.transform2d.rotation = glm::mod(obj.transform2d.rotation + 0.01f, glm::two_pi<float>());
-
-                SimplePushConstantData push{};
-                push.offset = obj.transform2d.translation;
-                push.color = obj.color;
-                push.transform = obj.transform2d.mat2();
-
-                vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
-                obj.model->bind(commandBuffer);
-                obj.model->draw(commandBuffer);
-
-        }
-
-    }
 
 
 }
