@@ -1,6 +1,11 @@
 #include "first_app.hpp"
 #include <iostream>
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
+
 #include <stdexcept>
 #include <array>
 
@@ -10,8 +15,15 @@
 namespace dsl {
 
 
+    struct SimplePushConstantData {
+        glm::mat2 transform{1.f};
+        glm::vec2 offset;
+        alignas(16)glm::vec3 color;
+    };
+
+
     FirstApp::FirstApp(){
-        loadModels();
+        loadGameObjects();
         createPipelineLayout();
         recreateSwapchain();
         createCommandBuffers();
@@ -83,7 +95,7 @@ namespace dsl {
 
 
 
-    void FirstApp::loadModels() {
+    void FirstApp::loadGameObjects() {
 
         std::vector<DslModel::Vertex>  vertices {
             {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
@@ -92,7 +104,16 @@ namespace dsl {
         };
         // sierpinski(vertices, 5, {-0.5f, 0.5f}, {0.5f, 0.5f}, {0.0f, -0.5f});
 
-        dslModel = std::make_unique<DslModel>(dslDevice, vertices);
+        auto dslModel = std::make_shared<DslModel>(dslDevice, vertices);
+
+        auto triangle = DslGameObject::createGameObject();
+        triangle.model = dslModel;
+        triangle.color = {0.1f, .8f, .1f};
+        triangle.transform2d.translation.x = .2f;
+        triangle.transform2d.scale = {2.f, .5f};
+        triangle.transform2d.rotation = .25f * glm::two_pi<float>();
+
+        gameObjects.push_back(std::move(triangle));
 
     }
 
@@ -100,12 +121,19 @@ namespace dsl {
 
     void FirstApp::createPipelineLayout(){
 
+
+        VkPushConstantRange pushConstantRange{};
+        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        pushConstantRange.offset = 0;
+        pushConstantRange.size = sizeof(SimplePushConstantData);
+
+
         VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{};
         pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutCreateInfo.setLayoutCount = 0;
         pipelineLayoutCreateInfo.pSetLayouts = nullptr;
-        pipelineLayoutCreateInfo.pushConstantRangeCount = 0;
-        pipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
+        pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
+        pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
 
         if(vkCreatePipelineLayout(dslDevice.device(), &pipelineLayoutCreateInfo, nullptr, &pipelineLayout) != VK_SUCCESS){
             throw std::runtime_error("failed to create pipeline layout");
@@ -173,7 +201,9 @@ namespace dsl {
 
 
     void FirstApp::recordCommandbuffer(int imageIndex){
-                    VkCommandBufferBeginInfo beginInfo{};
+
+
+            VkCommandBufferBeginInfo beginInfo{};
             beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
             if(vkBeginCommandBuffer(commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS){
@@ -190,7 +220,7 @@ namespace dsl {
             renderPassInfo.renderArea.extent = dslSwapChain->getSwapChainExtent();
 
             std::array<VkClearValue, 2> clearValues{};
-            clearValues[0].color = {0.1f, 0.1f, 0.1f, 0.1f};
+            clearValues[0].color = {0.01f, 0.01f, 0.01f, 1.0f};
             clearValues[1].depthStencil = {1.0f, 0};
 
 
@@ -214,15 +244,40 @@ namespace dsl {
 
 
 
-            dslPipeline->bind(commandBuffers[imageIndex]);
-            dslModel->bind(commandBuffers[imageIndex]);
-            dslModel->draw(commandBuffers[imageIndex]);
+            renderGameObjects(commandBuffers[imageIndex]);
+
+
+            
 
             vkCmdEndRenderPass(commandBuffers[imageIndex]);
             if(vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS){
                 throw std::runtime_error("failed to record command buffer");
             }
     }
+
+
+
+    void FirstApp::renderGameObjects(VkCommandBuffer commandBuffer){
+        dslPipeline->bind(commandBuffer);
+
+        for (auto& obj : gameObjects){
+
+                obj.transform2d.rotation = glm::mod(obj.transform2d.rotation + 0.01f, glm::two_pi<float>());
+
+                SimplePushConstantData push{};
+                push.offset = obj.transform2d.translation;
+                push.color = obj.color;
+                push.transform = obj.transform2d.mat2();
+
+                vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
+                obj.model->bind(commandBuffer);
+                obj.model->draw(commandBuffer);
+
+        }
+
+    }
+
+
 
     void FirstApp::drawFrame(){
 

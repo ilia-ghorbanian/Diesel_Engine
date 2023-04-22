@@ -3,7 +3,8 @@
 #include "dsl_pipeline.hpp"
 #include "dsl_window.hpp"
 #include "dsl_swap_chain.hpp"
-#include "dsl_model.hpp"
+//#include "dsl_model.hpp"
+#include "dsl_game_object.hpp"
 
 #include <memory>
 #include <vector>
@@ -34,7 +35,7 @@ namespace dsl {
         // glm::vec2 right,
         // glm::vec2 top); 
 
-        void loadModels();
+        void loadGameObjects();
         void createPipelineLayout();
         void createPipeline();
         void createCommandBuffers();
@@ -42,6 +43,7 @@ namespace dsl {
         void drawFrame();
         void recreateSwapchain();
         void recordCommandbuffer(int imgIndex);
+        void renderGameObjects(VkCommandBuffer commandBuffer);
 
 
         DslWindow dslWindow{WIDTH, HEIGHT, "Vulkan Stuff IG!?!"};
@@ -51,7 +53,7 @@ namespace dsl {
         std::unique_ptr<DslPipeline> dslPipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
-        std::unique_ptr<DslModel> dslModel;
+        std::vector<DslGameObject> gameObjects;
 
         //DslPipeline dslPipeline{dslDevice, "../shaders/simple_shader.vert.spv", "../shaders/simple_shader.frag.spv", DslPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
         
